@@ -39,9 +39,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 login();
-                //startActivity(new Intent(LoginActivity.this, LoginActivity.class));
             }
         });
+
+        new EventfulService().execute();
     }
 
     private void login() {

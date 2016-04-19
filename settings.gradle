@@ -1,1 +1,1 @@
-include ':HangoutApp'
+include ':HangoutApp', ':eventful_android'
