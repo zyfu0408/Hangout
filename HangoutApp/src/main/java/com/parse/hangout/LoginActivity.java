@@ -14,6 +14,10 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.eventful_android.data.Event;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by fuzhongyuan on 4/12/16.
@@ -42,7 +46,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        new EventfulService().execute();
+        try {
+            List<Event> events = new EventfulService().execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private void login() {
@@ -53,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MapActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK |
                             Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
