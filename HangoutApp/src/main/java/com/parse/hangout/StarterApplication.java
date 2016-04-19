@@ -11,7 +11,7 @@ package com.parse.hangout;
 import android.app.Application;
 
 import com.parse.Parse;
-
+import com.parse.ParseObject;
 
 public class StarterApplication extends Application {
 
@@ -28,9 +28,11 @@ public class StarterApplication extends Application {
         Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
                         .applicationId("hangout_id")
                         .clientKey("hangout_key")
-                        .server("http://130.215.219.9:1337/parse/") // The trailing slash is important.
+                        .server("http://10.169.46.155:1337/parse/") // The trailing slash is important.
                         .build()
         );
+
+        ParseObject.registerSubclass(HangoutEvent.class);
 
 
 //        ParseUser.enableAutomaticUser();
