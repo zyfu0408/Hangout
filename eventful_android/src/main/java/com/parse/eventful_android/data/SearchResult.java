@@ -78,6 +78,10 @@ public class SearchResult {
         return eventMap;
     }
 
+    public List<Event> getEventsList() {
+        return events;
+    }
+
     public void setEvents(Hashtable<String, Event> events) {
         this.events = new ArrayList<>(events.values());
     }
