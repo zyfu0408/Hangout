@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Hangout.iml" filepath="$PROJECT_DIR$/Hangout.iml" />
       <module fileurl="file://$PROJECT_DIR$/HangoutApp/HangoutApp.iml" filepath="$PROJECT_DIR$/HangoutApp/HangoutApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eventful_android/eventful_android.iml" filepath="$PROJECT_DIR$/eventful_android/eventful_android.iml" />
     </modules>
   </component>
 </project>
