@@ -45,14 +45,6 @@ public class LoginActivity extends AppCompatActivity {
                 login();
             }
         });
-
-        try {
-            List<Event> events = new EventfulService().execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
     }
 
     private void login() {

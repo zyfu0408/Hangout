@@ -94,6 +94,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             case R.id.map_screen:
                 startActivity(new Intent(this, MapActivity.class));
                 return true;
+            case R.id.list_screen:
+                startActivity(new Intent(this, EventListActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

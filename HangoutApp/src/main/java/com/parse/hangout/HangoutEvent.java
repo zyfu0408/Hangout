@@ -10,12 +10,6 @@ import com.parse.ParseUser;
 @ParseClassName("Events")
 public class HangoutEvent extends ParseObject {
 
-    public HangoutEvent(String title, ParseUser user, ParseGeoPoint location) {
-        this.setTitle(title);
-        this.setUser(user);
-        this.setLocation(location);
-    }
-
     public String getTitle() {
         return getString("title");
     }
