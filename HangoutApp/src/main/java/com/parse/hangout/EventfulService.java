@@ -10,23 +10,21 @@ import com.parse.eventful_android.data.SearchResult;
 import com.parse.eventful_android.data.request.EventSearchRequest;
 import com.parse.eventful_android.operations.EventOperations;
 
-
-import java.util.Hashtable;
 import java.util.List;
 
 public class EventfulService extends AsyncTask<Void, Void, List<Event>> {
 
-    private static final String APP_KEY = "tn5Rmwfp2zzBxfwX";
-    private static final String APP_USERNAME = "GorjanZ";
-    private static final String APP_PASSWORD = "EventFul@123";
+    private static final String API_KEY = "4PkxLvVPCTrPpxHX";
+    private static final String APP_USERNAME = "test";
+    private static final String APP_PASSWORD = "eventsearch";
 
     public static List<Event> fetch(String query, String location, int limit) {
 
         System.out.println("Setting configuration");
 
-        APIConfiguration.setEvdbUser("adam");
-        APIConfiguration.setEvdbPassword("eventsearch");
-        APIConfiguration.setApiKey("4PkxLvVPCTrPpxHX");
+        APIConfiguration.setEvdbUser(APP_USERNAME);
+        APIConfiguration.setEvdbPassword(APP_PASSWORD);
+        APIConfiguration.setApiKey(API_KEY);
 
         EventOperations eo = new EventOperations();
 
@@ -48,10 +46,8 @@ public class EventfulService extends AsyncTask<Void, Void, List<Event>> {
             e.printStackTrace();
         }
 
-
-        Hashtable<String, Event> eventfulListe = sr.getEvents();
-
-        return null;
+        List<Event> events = sr.getEventsList();
+        return events;
     }
 
     @Override
