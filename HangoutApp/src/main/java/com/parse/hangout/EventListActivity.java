@@ -56,6 +56,10 @@ public class EventListActivity extends AppCompatActivity {
             case R.id.list_screen:
                 startActivity(new Intent(this, EventListActivity.class));
                 return true;
+            case R.id.signout:
+                AccountUtilities.signout();
+                startActivity(new Intent(this, LoginActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
