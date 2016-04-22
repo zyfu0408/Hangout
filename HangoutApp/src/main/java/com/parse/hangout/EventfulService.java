@@ -1,8 +1,14 @@
 package com.parse.hangout;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.eventful_android.APIConfiguration;
 import com.parse.eventful_android.EVDBAPIException;
@@ -31,21 +37,17 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
 
         EventOperations eo = new EventOperations();
 
-        //create the search request for music events in San Diego
+        //create the search request for events in Worcester
         EventSearchRequest esr = new EventSearchRequest();
         esr.setPageSize(100);
         esr.setLocation("Worcester, MA");
-
-        System.out.println("Starting initial request.");
 
         SearchResult sr = null;
         try {
             sr = eo.search(esr);
         } catch (EVDBRuntimeException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (EVDBAPIException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -80,7 +82,28 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
             description = android.text.Html.fromHtml(event.getDescription()).toString();
             hangoutEvent.setDescription(description);
 
+            // add the event to the list to be displayed
             hangoutEvents.add(hangoutEvent);
+
+
+            // run a query in the background, checking to see if the current event exists in the DB or not
+            ParseQuery<HangoutEvent> query = ParseQuery.getQuery(HangoutEvent.class);
+            query.whereEqualTo("title", hangoutEvent.getTitle());
+            query.whereEqualTo("description", hangoutEvent.getDescription());
+            final HangoutEvent finalHangoutEvent = hangoutEvent;
+            query.findInBackground(new FindCallback<HangoutEvent>() {
+                @Override
+                public void done(List<HangoutEvent> objects, ParseException e) {
+                    if (e == null) {
+                        if (objects == null || objects.size() == 0) {
+                            finalHangoutEvent.saveInBackground();
+                        } else if (objects.size() == 1) {
+                            // do nothing, the event we are looking for has been created
+                        }
+                    }
+                }
+            });
+
         }
         return hangoutEvents;
     }
