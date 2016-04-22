@@ -13,7 +13,7 @@
         android:orderInCategory="100"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/create_screen"
+    <item android:id="@+id/post_screen"
         android:title="@string/create_screen"
         android:orderInCategory="100"
         app:showAsAction="never"/>

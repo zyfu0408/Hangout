@@ -43,7 +43,7 @@ public class EventListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -56,6 +56,8 @@ public class EventListActivity extends AppCompatActivity {
             case R.id.list_screen:
                 startActivity(new Intent(this, EventListActivity.class));
                 return true;
+            case R.id.post_screen:
+                startActivity(new Intent(this, PostEventActivity.class));
             default:
                 return super.onOptionsItemSelected(item);
         }

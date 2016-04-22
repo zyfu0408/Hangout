@@ -18,17 +18,12 @@ public class StarterApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-//    // Enable Local Datastore.
-//    Parse.enableLocalDatastore(this);
-//
-//    // Add your initialization code here
-//    Parse.initialize(this);
-
+        
+        // Add your initialization code here
         Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
                         .applicationId("hangout_id")
                         .clientKey("hangout_key")
-                        .server("http://10.169.46.155:1337/parse/") // The trailing slash is important.
+                        .server("http://192.168.29.100:1337/parse/") // The trailing slash is important.
                         .build()
         );
 
@@ -51,10 +46,10 @@ public class StarterApplication extends Application {
 //            @Override
 //            public void done(List<ParseObject> objects, ParseException e) {
 //                if (e == null) {
-//                Log.d("test", "Retrieved " + objects.size() + " scores");
-//            } else {
-//                Log.d("test", "Error: " + e.getMessage());
-//            }
+//                    Log.d("test", "Retrieved " + objects.size() + " scores");
+//                } else {
+//                    Log.d("test", "Error: " + e.getMessage());
+//                }
 //            }
 //        });
     }

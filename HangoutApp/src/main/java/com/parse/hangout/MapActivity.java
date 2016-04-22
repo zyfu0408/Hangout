@@ -36,14 +36,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
-    public GoogleApiClient mApiClient;
+    private GoogleApiClient mApiClient;
 
     private GoogleMap map;
     private LocationRequest mLocationRequest;
     private Location mLastLocation;
     private Marker marker;
 
-    private final int LOCATION_REQUEST_INTERVAL = 3000;
+    private final int LOCATION_REQUEST_INTERVAL = 300000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +97,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             case R.id.list_screen:
                 startActivity(new Intent(this, EventListActivity.class));
                 return true;
+            case R.id.post_screen:
+                startActivity(new Intent(this, PostEventActivity.class));
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -161,7 +163,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     /**
      * Helper called by onMapReady callback
      */
-
     public void setUpMap() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,

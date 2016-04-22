@@ -5,7 +5,7 @@
 
     <string name="app_name">Hangout</string>
 
-    <string name="hello_world">Hello World!</string>
+    <string name="post_event_label_name">Post an Event</string>
     <string name="action_settings">Settings</string>
 
     <string name="login">Log in</string>
@@ -35,5 +35,13 @@
     <string name="map_screen">View the Map</string>
     <string name="list_screen">Events List</string>
     <string name="create_screen">Post an Event</string>
+
+    <!--Strings for post activity-->
+    <string name="post">Post</string>
+    <string name="character_count_placeholder">0/140</string>
+    <string name="activity_post_title">Create a Post</string>
+    <string name="prompt_post">Description...</string>
+    <string name="post_subject">Event Subject</string>
+
 
 </resources>
