@@ -1,30 +1,45 @@
 package com.parse.hangout;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.parse.ParseACL;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 public class PostEventActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<LocationSettingsResult> {
+
+    protected static final int MAX_POST_COUNT = 140;
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
@@ -34,10 +49,15 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
     private LocationRequest mLocationRequest;
 
     private EditText post_subject;
-    private EditText post_description;
+    private EditText post_content;
+    private TextView post_character_count;
+    private Button post_button;
 
-    private Location lastLocation;
-    private Location currentLocation;
+    private HangoutEvent hangoutEvent;
+    private ParseGeoPoint parseGeoPoint;
+
+    private Location mLastLocation;
+    private Location mCurrentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +68,59 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
         setSupportActionBar(toolbar);
 
         post_subject = (EditText) findViewById(R.id.post_subject);
-        post_subject = (EditText) findViewById(R.id.post_content);
+        post_content = (EditText) findViewById(R.id.post_content);
+        post_character_count = (TextView) findViewById(R.id.character_count_textview);
+        post_button = (Button) findViewById(R.id.post_button);
+
+        hangoutEvent = new HangoutEvent();
+
+        post_content.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                updatePostButtonState();
+                updateCharacterCountTextView();
+            }
+        });
+
+        post_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                post();
+            }
+        });
 
         if (mGoogleApiClient == null) {
             buildGoogleApiClient();
         }
 
+    }
+
+    private void post() {
+        ParseUser user = ParseUser.getCurrentUser();
+        hangoutEvent.setUser(user);
+        parseGeoPoint = new ParseGeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        hangoutEvent.setLocation(parseGeoPoint);
+        hangoutEvent.setTitle(getPostTitle());
+        hangoutEvent.setDescription(getPostContent());
+
+        ParseACL acl = new ParseACL();
+        acl.setPublicReadAccess(true);
+        hangoutEvent.setACL(acl);
+
+        hangoutEvent.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                finish();
+            }
+        });
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -63,6 +130,15 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
+
+    private void checkSelfPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+        }
     }
 
     @Override
@@ -82,6 +158,14 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
     @Override
     protected void onResume() {
         super.onResume();
+        checkSelfPermission();
+        LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
     @Override
@@ -108,6 +192,11 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
                 return true;
             case R.id.post_screen:
                 startActivity(new Intent(this, PostEventActivity.class));
+                return true;
+            case R.id.signout:
+                AccountUtilities.signout();
+                startActivity(new Intent(this, LoginActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -124,6 +213,9 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
                         builder.build());
 
         result.setResultCallback(this);
+
+        checkSelfPermission();
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
     }
 
     //the call back of location setting result
@@ -176,33 +268,39 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
     }
 
     // implement google api client connection failed
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 
-    // implement android location listener
+    //implement android location listener
     @Override
     public void onLocationChanged(Location location) {
-
+        mLastLocation = location;
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
+    private String getPostTitle() {
+        return post_subject.getText().toString().trim();
     }
 
-    @Override
-    public void onProviderEnabled(String provider) {
-
+    private String getPostContent() {
+        return post_content.getText().toString().trim();
     }
 
-    @Override
-    public void onProviderDisabled(String provider) {
+    private void updatePostButtonState() {
+        boolean titleState = getPostTitle() != null && getPostTitle().length() != 0;
+        boolean contentState = getPostContent().length() <= MAX_POST_COUNT;
 
+        post_button.setEnabled(titleState && contentState);
+    }
+
+    private void updateCharacterCountTextView() {
+        String characterCount = String.format("%d/%d", post_content.length(), MAX_POST_COUNT);
+        post_character_count.setText(characterCount);
     }
 }
