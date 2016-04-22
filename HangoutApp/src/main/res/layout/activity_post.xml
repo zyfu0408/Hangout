@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#757171">
+    android:layout_height="match_parent">
 
     <include
         android:id="@+id/toolbar"
@@ -17,9 +16,7 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="70dp"
-        android:hint="@string/post_subject"
-        android:textColor="#ffffff"
-        >
+        android:hint="@string/post_subject">
         <requestFocus/>
     </EditText>
 
@@ -35,8 +32,7 @@
         android:background="@null"
         android:gravity="top"
         android:hint="@string/prompt_post"
-        android:inputType="textMultiLine"
-        android:textColor="#ffffff"></EditText>
+        android:inputType="textMultiLine" />
 
     <Button
         android:id="@+id/post_button"
@@ -62,6 +58,5 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:text="@string/character_count_placeholder"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="#ffffff" />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 </RelativeLayout>
