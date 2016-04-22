@@ -62,8 +62,9 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
     private static List<HangoutEvent> convertEventListToHangoutEventList(List<Event> events) {
 
         List<HangoutEvent> hangoutEvents = new ArrayList<HangoutEvent>();
-        HangoutEvent hangoutEvent = null;
-        ParseGeoPoint parseGeoPoint = null;
+        HangoutEvent hangoutEvent;
+        ParseGeoPoint parseGeoPoint;
+        String description;
 
         ParseUser user = ParseUser.getCurrentUser();
 
@@ -74,7 +75,10 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
             hangoutEvent.setTitle(event.getTitle());
             hangoutEvent.setUser(user);
             hangoutEvent.setLocation(parseGeoPoint);
-            hangoutEvent.setDescription(event.getDescription());
+
+            // loads description as HTML, as some of the descriptions use <p> tags and others
+            description = android.text.Html.fromHtml(event.getDescription()).toString();
+            hangoutEvent.setDescription(description);
 
             hangoutEvents.add(hangoutEvent);
         }

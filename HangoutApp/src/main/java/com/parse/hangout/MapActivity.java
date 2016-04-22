@@ -99,6 +99,10 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 return true;
             case R.id.post_screen:
                 startActivity(new Intent(this, PostEventActivity.class));
+            case R.id.signout:
+                AccountUtilities.signout();
+                startActivity(new Intent(this, LoginActivity.class));
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
