@@ -18,6 +18,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -29,21 +32,39 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.eventful_android.data.Event;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
     private GoogleApiClient mApiClient;
-
     private GoogleMap map;
     private LocationRequest mLocationRequest;
     private Location mLastLocation;
+    private Location mCurrentLocation;
     private Marker marker;
+    private final int LOCATION_REQUEST_INTERVAL = 500000;
 
-    private final int LOCATION_REQUEST_INTERVAL = 300000;
+
+    private final Map<String, Marker> mapMarkers = new HashMap<String, Marker>();
+    private final Map<Marker, HangoutEvent> markerHangoutEventMap = new HashMap<Marker, HangoutEvent>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,19 +154,24 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
+        if (mCurrentLocation != null) {
+            mCurrentLocation = mLastLocation;
+        }
+        mCurrentLocation = location;
 
         //remove previous current location Marker
         if (marker != null) {
             marker.remove();
         }
 
-        double dLatitude = mLastLocation.getLatitude();
-        double dLongitude = mLastLocation.getLongitude();
+        double dLatitude = mCurrentLocation.getLatitude();
+        double dLongitude = mCurrentLocation.getLongitude();
         marker = map.addMarker(new MarkerOptions().position(new LatLng(dLatitude, dLongitude))
                 .title("My Location").icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                        .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 16.0f));
+
+        doMapQuery();
     }
 
     @Override
@@ -175,5 +201,181 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 //            return;
         }
         map.setMyLocationEnabled(true);
+
+        map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            public void onCameraChange(CameraPosition position) {
+                doMapQuery();
+            }
+        });
+
+        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            // Use default InfoWindow frame
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            // Defines the contents of the InfoWindow
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                final ParseUser user = ParseUser.getCurrentUser();
+                final HangoutEvent event = markerHangoutEventMap.get(marker);
+
+                // Getting view from the layout file info_window_layout
+                View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
+
+                TextView title = (TextView) v.findViewById(R.id.event_title);
+                title.setText(marker.getTitle());
+
+                final TextView membersAttending = (TextView) v.findViewById(R.id.members_attending);
+
+                int numMembers = 0;
+                boolean isUserAttending = false;
+
+                ParseQuery<EventMembership> mapQuery = ParseQuery.getQuery(EventMembership.class);
+                mapQuery.whereEqualTo("hangoutEvent", event);
+
+
+                // see who is attending this event
+                List<EventMembership> memberships = new ArrayList<EventMembership>();
+                try {
+                    memberships = mapQuery.find();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                for (EventMembership membership : memberships) {
+                    if (membership.getEventMember().getObjectId().equals(user.getObjectId())) {
+                        isUserAttending = true;
+                    }
+                }
+                numMembers = memberships.size();
+
+
+                membersAttending.setText("Members attending: " + numMembers);
+
+                Button joinButton = (Button) v.findViewById(R.id.join_button);
+
+                if (isUserAttending == true) {
+                    joinButton.setText("Joined!");
+                } else {
+                    joinButton.setText("Join");
+                }
+
+                // Returning the view containing InfoWindow contents
+                return v;
+
+            }
+        });
+
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(final Marker marker) {
+
+                View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
+
+                final ParseUser user = ParseUser.getCurrentUser();
+                final HangoutEvent event = markerHangoutEventMap.get(marker);
+
+
+                ParseQuery<EventMembership> mapQuery = ParseQuery.getQuery(EventMembership.class);
+                mapQuery.whereEqualTo("hangoutEvent", event);
+                mapQuery.whereEqualTo("member", user);
+                mapQuery.include("hangoutEvent");
+                mapQuery.findInBackground(new FindCallback<EventMembership>() {
+                    @Override
+                    public void done(List<EventMembership> objects, ParseException e) {
+                        if (objects.size() == 0) {
+                            EventMembership membership = new EventMembership();
+                            membership.setEvent(event);
+                            membership.setEventMember(user);
+                            membership.saveInBackground();
+
+
+                            // refresh the info window in order to change the button
+                            marker.showInfoWindow();
+                        }
+                    }
+                });
+
+
+            }
+        });
+    }
+
+    private void doMapQuery() {
+        Location myLoc = mCurrentLocation;
+        if (myLoc == null) {
+            cleanUpMarkers(new HashSet<String>());
+            return;
+        }
+
+        final ParseGeoPoint myPoint = geoPointFromLocation(myLoc);
+        ParseQuery<HangoutEvent> mapQuery = ParseQuery.getQuery(HangoutEvent.class);
+//        mapQuery.whereWithinKilometers("location", myPoint, 100);
+//        mapQuery.include("user");
+        mapQuery.orderByDescending("createdAt");
+
+        mapQuery.findInBackground(new FindCallback<HangoutEvent>() {
+            @Override
+            public void done(List<HangoutEvent> objects, ParseException e) {
+
+                Set<String> toKeep = new HashSet<String>();
+
+                for (HangoutEvent event : objects) {
+
+                    toKeep.add(event.getObjectId());
+
+                    Marker oldMarker = mapMarkers.get(event.getObjectId());
+
+                    // if it already exists on the map, dont add another one
+                    if (oldMarker != null) {
+                        continue;
+                    } else {
+
+                        // add the marker to the map
+                        MarkerOptions markerOpts =
+                                new MarkerOptions().position(new LatLng(event.getLocation().getLatitude(), event
+                                        .getLocation().getLongitude()))
+                                        .title(event.getTitle())
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+                        Marker marker = map.addMarker(markerOpts);
+//                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLocation().getLatitude(), event
+//                                .getLocation().getLongitude()), 16.0f));
+                        mapMarkers.put(event.getObjectId(), marker);
+                        markerHangoutEventMap.put(marker, event);
+
+
+                    }
+                }
+
+                cleanUpMarkers(toKeep);
+            }
+        });
+    }
+
+    /**
+     * Helper method to convert a Location to ParseGeoPoint
+     */
+    private ParseGeoPoint geoPointFromLocation(Location loc) {
+        return new ParseGeoPoint(loc.getLatitude(), loc.getLongitude());
+    }
+
+
+    /**
+     * Method to remove old markers, and keeps the markers we provide
+     */
+    private void cleanUpMarkers(Set<String> markersToKeep) {
+        for (String objId : new HashSet<String>(mapMarkers.keySet())) {
+            if (!markersToKeep.contains(objId)) {
+                Marker marker = mapMarkers.get(objId);
+                marker.remove();
+                mapMarkers.get(objId).remove();
+                mapMarkers.remove(objId);
+            }
+        }
     }
 }

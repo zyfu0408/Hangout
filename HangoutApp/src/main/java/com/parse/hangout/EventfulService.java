@@ -71,7 +71,7 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
         ParseUser user = ParseUser.getCurrentUser();
 
         for (Event event : events) {
-            parseGeoPoint = new ParseGeoPoint(event.getVenueLongitude(), event.getVenueLatitude());
+            parseGeoPoint = new ParseGeoPoint(event.getVenueLatitude(), event.getVenueLongitude());
 
             hangoutEvent = new HangoutEvent();
             hangoutEvent.setTitle(event.getTitle());
