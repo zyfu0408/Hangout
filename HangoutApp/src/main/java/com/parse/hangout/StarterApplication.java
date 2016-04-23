@@ -23,34 +23,11 @@ public class StarterApplication extends Application {
         Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
                         .applicationId("hangout_id")
                         .clientKey("hangout_key")
-                        .server("http://192.168.29.100:1337/parse/") // The trailing slash is important.
+                        .server("http://10.169.46.161:1337/parse/") // The trailing slash is important.
                         .build()
         );
 
         ParseObject.registerSubclass(HangoutEvent.class);
-
-
-//        ParseUser.enableAutomaticUser();
-//        ParseACL defaultACL = new ParseACL();
-//        // Optionally enable public read access.
-//        // defaultACL.setPublicReadAccess(true);
-//        ParseACL.setDefaultACL(defaultACL, true);
-//
-//        ParseObject parseObject = new ParseObject("Objects");
-//        parseObject.put("key", "value");
-//        parseObject.put("key2", "value2");
-//        parseObject.saveInBackground();
-//
-//        ParseQuery<ParseObject> query = ParseQuery.getQuery("Objects");
-//        query.findInBackground(new FindCallback<ParseObject>() {
-//            @Override
-//            public void done(List<ParseObject> objects, ParseException e) {
-//                if (e == null) {
-//                    Log.d("test", "Retrieved " + objects.size() + " scores");
-//                } else {
-//                    Log.d("test", "Error: " + e.getMessage());
-//                }
-//            }
-//        });
+        ParseObject.registerSubclass(EventMembership.class);
     }
 }

@@ -32,8 +32,12 @@
         <!--android:name="com.google.android.maps.v2.API_KEY"-->
         <!--android:value="AIzaSyB-CuKyphqvW06v180JR6FUBPQN1awPgDo" />-->
 
+        <!--<meta-data-->
+            <!--android:name="com.google.android.maps.v2.API_KEY"-->
+            <!--android:value="AIzaSyC5yXOPlZDQ3gua4rT934E00IvOkNlWgss" />-->
+
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
+            android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC5yXOPlZDQ3gua4rT934E00IvOkNlWgss" />
 
         <activity

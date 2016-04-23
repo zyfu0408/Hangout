@@ -5,7 +5,7 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_main"></include>
+        layout="@layout/toolbar_main"/>
 
     <EditText
         android:id="@+id/post_subject"
@@ -24,7 +24,7 @@
         android:id="@+id/post_content"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/character_count_textview"
+        android:layout_above="@+id/place_autocomplete_fragment"
         android:layout_below="@+id/post_subject"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
@@ -33,6 +33,17 @@
         android:gravity="top"
         android:hint="@string/prompt_post"
         android:inputType="textMultiLine" />
+
+    <fragment
+        android:id="@+id/place_autocomplete_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_above="@+id/post_button"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
     <Button
         android:id="@+id/post_button"
@@ -44,19 +55,4 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:text="@string/post" />
-
-    <TextView
-        android:id="@+id/character_count_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/post_button"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:text="@string/character_count_placeholder"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
 </RelativeLayout>

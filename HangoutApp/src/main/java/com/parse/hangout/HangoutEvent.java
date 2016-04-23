@@ -42,6 +42,14 @@ public class HangoutEvent extends ParseObject {
         put("location", value);
     }
 
+    public String getAddress() {
+        return getString("address");
+    }
+
+    public void setAddress(String address) {
+        put("address", address);
+    }
+
     public static ParseQuery<HangoutEvent> getQuery() {
         return ParseQuery.getQuery(HangoutEvent.class);
     }
