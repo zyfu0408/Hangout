@@ -7,7 +7,7 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_main"></include>
+        layout="@layout/toolbar_main"/>
 
     <ListView
         android:id="@+id/events_listview"
