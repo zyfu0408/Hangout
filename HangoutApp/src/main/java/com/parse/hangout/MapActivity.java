@@ -41,7 +41,6 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.eventful_android.data.Event;
 
 import java.util.ArrayList;
 import java.util.HashMap;

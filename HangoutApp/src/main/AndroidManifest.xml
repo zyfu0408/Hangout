@@ -63,15 +63,11 @@
             android:label="@string/app_name" />
 
         <activity
-            android:name=".EventListActivity"
-            android:label="@string/app_name" />
-
-        <activity
             android:name=".PostEventActivity"
             android:label="@string/app_name" />
 
         <activity
-            android:name=".RecycleEventListActivity"
+            android:name=".EventListActivity"
             android:label="@string/app_name" />
 
 
