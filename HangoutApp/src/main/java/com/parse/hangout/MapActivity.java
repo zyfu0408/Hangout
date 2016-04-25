@@ -41,6 +41,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.eventful_android.data.Event;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,11 +115,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             case R.id.map_screen:
                 startActivity(new Intent(this, MapActivity.class));
                 return true;
-//            case R.id.list_screen:
-//                startActivity(new Intent(this, EventListActivity.class));
-//                return true;
             case R.id.list_screen:
-                startActivity(new Intent(this, RecycleEventListActivity.class));
+                startActivity(new Intent(this, EventListActivity.class));
                 return true;
             case R.id.post_screen:
                 startActivity(new Intent(this, PostEventActivity.class));
