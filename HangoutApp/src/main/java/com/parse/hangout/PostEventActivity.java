@@ -217,8 +217,11 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
             case R.id.map_screen:
                 startActivity(new Intent(this, MapActivity.class));
                 return true;
+//            case R.id.list_screen:
+//                startActivity(new Intent(this, EventListActivity.class));
+//                return true;
             case R.id.list_screen:
-                startActivity(new Intent(this, EventListActivity.class));
+                startActivity(new Intent(this, RecycleEventListActivity.class));
                 return true;
             case R.id.post_screen:
                 startActivity(new Intent(this, PostEventActivity.class));
