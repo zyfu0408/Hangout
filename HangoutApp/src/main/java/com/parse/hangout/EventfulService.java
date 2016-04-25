@@ -1,13 +1,10 @@
 package com.parse.hangout;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.eventful_android.APIConfiguration;
