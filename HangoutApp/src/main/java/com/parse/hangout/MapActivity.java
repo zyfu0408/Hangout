@@ -36,11 +36,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +50,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 
 public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
@@ -60,10 +63,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private Marker marker;
     private final int LOCATION_REQUEST_INTERVAL = 500000;
 
-
     private final Map<String, Marker> mapMarkers = new HashMap<String, Marker>();
     private final Map<Marker, HangoutEvent> markerHangoutEventMap = new HashMap<Marker, HangoutEvent>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,14 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 .build();
 
         mApiClient.connect();
+
+        try {
+            new EventfulService().execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -269,39 +278,60 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
             }
         });
 
-        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(final Marker marker) {
-
-                View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
-
-                final ParseUser user = ParseUser.getCurrentUser();
-                final HangoutEvent event = markerHangoutEventMap.get(marker);
-
-
-                ParseQuery<EventMembership> mapQuery = ParseQuery.getQuery(EventMembership.class);
-                mapQuery.whereEqualTo("hangoutEvent", event);
-                mapQuery.whereEqualTo("member", user);
-                mapQuery.include("hangoutEvent");
-                mapQuery.findInBackground(new FindCallback<EventMembership>() {
+        // listener that handles joining/leaving an event on the map
+        map.setOnInfoWindowClickListener(
+                new GoogleMap.OnInfoWindowClickListener() {
                     @Override
-                    public void done(List<EventMembership> objects, ParseException e) {
-                        if (objects.size() == 0) {
-                            EventMembership membership = new EventMembership();
-                            membership.setEvent(event);
-                            membership.setEventMember(user);
-                            membership.saveInBackground();
+                    public void onInfoWindowClick(final Marker marker) {
+
+                        View v = getLayoutInflater().inflate(R.layout.info_window_layout, null);
+
+                        final ParseUser user = ParseUser.getCurrentUser();
+                        final HangoutEvent event = markerHangoutEventMap.get(marker);
 
 
-                            // refresh the info window in order to change the button
-                            marker.showInfoWindow();
-                        }
+                        ParseQuery<EventMembership> mapQuery = ParseQuery.getQuery(EventMembership.class);
+                        mapQuery.whereEqualTo("hangoutEvent", event);
+                        mapQuery.whereEqualTo("member", user);
+                        mapQuery.include("hangoutEvent");
+                        mapQuery.findInBackground(
+                                new FindCallback<EventMembership>() {
+                                    @Override
+                                    public void done(List<EventMembership> objects, ParseException e) {
+                                        if (objects.size() == 0) {
+                                            EventMembership membership = new EventMembership();
+                                            membership.setEvent(event);
+                                            membership.setEventMember(user);
+                                            membership.saveInBackground(new SaveCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    if (e == null) {
+                                                        // once the EventMembership is saved,
+                                                        // refresh the info window to show this user is attending the event
+                                                        marker.showInfoWindow();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        // leave the event if the user has joined it
+                                        else if (objects.size() == 1) {
+                                            objects.get(0).deleteInBackground(new DeleteCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    if (e == null) {
+                                                        // refresh info window once deleted
+                                                        marker.showInfoWindow();
+                                                    }
+                                                }
+                                            });
+
+                                        }
+                                    }
+                                }
+                        );
                     }
-                });
-
-
-            }
-        });
+                }
+        );
     }
 
     private void doMapQuery() {

@@ -9,10 +9,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class EventListActivity extends AppCompatActivity{
+public class EventListActivity extends AppCompatActivity {
     private List<HangoutEvent> events;
 
     private RecyclerView mRecyclerView;
@@ -28,13 +32,19 @@ public class EventListActivity extends AppCompatActivity{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        try {
-            events = new EventfulService().execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+
+        // specify an adapter (see also next example)
+        ParseQuery<HangoutEvent> query = ParseQuery.getQuery(HangoutEvent.class);
+        query.findInBackground(new FindCallback<HangoutEvent>() {
+            @Override
+            public void done(List<HangoutEvent> objects, ParseException e) {
+                if (e == null) {
+                    mAdapter = new EventListAdapter(objects);
+                    mRecyclerView.setAdapter(mAdapter);
+                }
+            }
+        });
+
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -44,9 +54,7 @@ public class EventListActivity extends AppCompatActivity{
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        // specify an adapter (see also next example)
-        mAdapter = new EventListAdapter(events);
-        mRecyclerView.setAdapter(mAdapter);
+
     }
 
     @Override
