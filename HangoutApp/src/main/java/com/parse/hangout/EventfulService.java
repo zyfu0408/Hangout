@@ -16,6 +16,7 @@ import com.parse.eventful_android.data.request.EventSearchRequest;
 import com.parse.eventful_android.operations.EventOperations;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
@@ -74,6 +75,18 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
             hangoutEvent.setTitle(event.getTitle());
             hangoutEvent.setUser(user);
             hangoutEvent.setLocation(parseGeoPoint);
+
+            // add start and stop times if not null
+            Date startTime = event.getStartTime();
+            Date stopTime = event.getStopTime();
+
+            if (startTime != null) {
+                hangoutEvent.setStartTime(startTime);
+            }
+
+            if (stopTime != null) {
+                hangoutEvent.setStopTime(stopTime);
+            }
 
             // loads description as HTML, as some of the descriptions use <p> tags and others
             description = android.text.Html.fromHtml(event.getDescription()).toString();

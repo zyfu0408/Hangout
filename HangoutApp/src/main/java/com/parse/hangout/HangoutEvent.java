@@ -6,6 +6,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.Date;
+
 
 @ParseClassName("Events")
 public class HangoutEvent extends ParseObject {
@@ -48,6 +50,22 @@ public class HangoutEvent extends ParseObject {
 
     public void setAddress(String address) {
         put("address", address);
+    }
+
+    public Date getStartTime() {
+        return getDate("startTime");
+    }
+
+    public void setStartTime(Date startTime) {
+        put("startTime", startTime);
+    }
+
+    public Date getStopTime() {
+        return getDate("endTime");
+    }
+
+    public void setStopTime(Date endTime) {
+        put("endTime", endTime);
     }
 
     public static ParseQuery<HangoutEvent> getQuery() {
