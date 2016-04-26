@@ -15,6 +15,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
@@ -30,6 +31,8 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         protected TextView titleTextView;
         protected TextView contentTextView;
         protected TextView membersAttending;
+        protected TextView startTime;
+        protected TextView stopTime;
         protected Button joinButton;
         protected View cardView;
 
@@ -40,6 +43,8 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             contentTextView = (TextView) v.findViewById(R.id.event_description);
             membersAttending = (TextView) v.findViewById(R.id.members_attending);
             joinButton = (Button) v.findViewById(R.id.join_button);
+            startTime = (TextView) v.findViewById(R.id.start_time);
+            stopTime = (TextView) v.findViewById(R.id.stop_time);
         }
 
     }
@@ -73,6 +78,24 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         final HangoutEvent event = events.get(position);
         holder.titleTextView.setText(event.getTitle());
         holder.contentTextView.setText(event.getDescription());
+
+        // add start and stop times
+        Date startTime = event.getStartTime();
+        Date stopTime = event.getStopTime();
+
+        if (startTime != null) {
+            holder.startTime.setText("Start Time: " + startTime.toString());
+        } else if (startTime == null) {
+            holder.startTime.setVisibility(View.GONE);
+        }
+
+        if (stopTime != null) {
+            holder.stopTime.setText("Stop Time: " + stopTime.toString());
+        } else if (stopTime == null) {
+            holder.stopTime.setVisibility(View.GONE);
+        }
+
+
 
         int numMembers = 0;
         boolean isUserAttending = false;

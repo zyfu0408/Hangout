@@ -40,11 +40,23 @@
                 android:text="attending members: 0"
                 android:textColor="#00ccff" />
 
+            <TextView
+                android:id="@+id/start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/members_attending"/>
+
+            <TextView
+                android:id="@+id/stop_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/start_time"/>
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/join_button"
-                android:layout_below="@+id/members_attending"
+                android:layout_below="@+id/stop_time"
                 android:text="Join"/>
 
 
