@@ -19,8 +19,8 @@ public class WelcomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        loginButton = (Button) findViewById(R.id.login_button);
-        signupButton = (Button) findViewById(R.id.signup_button);
+        loginButton = (Button) findViewById(R.id.login_button_welcome);
+        signupButton = (Button) findViewById(R.id.signup_button_welcome);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

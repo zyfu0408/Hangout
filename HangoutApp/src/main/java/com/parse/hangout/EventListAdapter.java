@@ -9,7 +9,6 @@ import android.widget.TextView;
 import java.util.List;
 
 public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
-    //private String[] mDataset;
     List<HangoutEvent> events;
 
     // Provide a reference to the views for each data item

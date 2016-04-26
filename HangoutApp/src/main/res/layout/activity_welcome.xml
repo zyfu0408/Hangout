@@ -9,7 +9,7 @@
     tools:context=".WelcomeActivity" >
 
     <Button
-        android:id="@+id/login_button"
+        android:id="@+id/login_button_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -21,14 +21,14 @@
         android:text="@string/login" />
 
     <Button
-        android:id="@+id/signup_button"
+        android:id="@+id/signup_button_welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/login_button"
+        android:layout_below="@id/login_button_welcome"
         android:text="@string/signup" />
 
     <TextView
