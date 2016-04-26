@@ -395,7 +395,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 membersAttending.setText("Members attending: " + numMembers);
 
                 if (isUserAttending == true) {
-                    joinButton.setText("Joined!");
+                    joinButton.setText("Unjoin");
                 } else {
                     joinButton.setText("Join");
                 }

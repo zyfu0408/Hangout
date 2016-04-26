@@ -129,7 +129,7 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
     }
 
     private void post() {
-        ParseUser user = ParseUser.getCurrentUser();
+        final ParseUser user = ParseUser.getCurrentUser();
         hangoutEvent.setUser(user);
 
         parseGeoPoint = new ParseGeoPoint(event_location.getLatitude(), event_location.getLongitude());
@@ -148,7 +148,20 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
         hangoutEvent.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                finish();
+                if (e == null) {
+                    EventMembership membership = new EventMembership();
+                    membership.setEvent(hangoutEvent);
+                    membership.setEventMember(user);
+                    membership.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if(e == null) {
+                                startActivity(new Intent(getApplicationContext(), MapActivity.class));
+                            }
+                        }
+                    });
+                }
+
             }
         });
     }

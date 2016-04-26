@@ -96,7 +96,6 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         }
 
 
-
         int numMembers = 0;
         boolean isUserAttending = false;
 
@@ -122,7 +121,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         holder.membersAttending.setText("Members attending: " + numMembers);
 
         if (isUserAttending == true) {
-            holder.joinButton.setText("Joined!");
+            holder.joinButton.setText("Unjoin");
         } else {
             holder.joinButton.setText("Join");
         }
@@ -150,13 +149,6 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                                         @Override
                                         public void done(ParseException e) {
                                             if (e == null) {
-                                                // once the EventMembership is saved,
-                                                // refresh the info window to show this user is attending the event
-
-                                                // TODO
-                                                //marker.showInfoWindow();
-//                                                Integer.parseInt()holder.membersAttending.getText()
-//                                                holder.joinButton.setText("Joined");
                                                 notifyDataSetChanged();
                                             }
                                         }
@@ -170,8 +162,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                                             if (e == null) {
                                                 // refresh info window once deleted
                                                 notifyDataSetChanged();
-                                                // TODO
-                                                //marker.showInfoWindow();
+
                                             }
                                         }
                                     });
