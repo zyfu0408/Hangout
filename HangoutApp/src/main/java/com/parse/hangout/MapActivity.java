@@ -9,13 +9,16 @@
 package com.parse.hangout;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,9 +27,15 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -53,7 +62,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 
-public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback, ResultCallback<LocationSettingsResult> {
 
     private GoogleApiClient mApiClient;
     private GoogleMap map;
@@ -62,6 +71,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     private Location mCurrentLocation;
     private Marker marker;
     private final int LOCATION_REQUEST_INTERVAL = 500000;
+
+    protected static final String TAG = "MapActivity";
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     private final Map<String, Marker> mapMarkers = new HashMap<String, Marker>();
     private final Map<Marker, HangoutEvent> markerHangoutEventMap = new HashMap<Marker, HangoutEvent>();
@@ -80,8 +92,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        mApiClient.connect();
-
         try {
             new EventfulService().execute().get();
         } catch (InterruptedException e) {
@@ -92,14 +102,15 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
     }
 
     @Override
+    protected void onStart() {
+        createLocationRequest();
+        mApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-
-        if (mApiClient == null || !mApiClient.isConnected()) {
-//            buildGoogleApiClient();
-//            mApiClient.connect();
-        }
-
         // create our map if it already isn't created
         if (map == null) {
             MapFragment mapFragment = (MapFragment) getFragmentManager()
@@ -107,8 +118,39 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
             mapFragment.getMapAsync(this);
         }
+
+        checkSelfPermission();
+        LocationServices.FusedLocationApi.getLastLocation(mApiClient);
+
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocationServices.FusedLocationApi.removeLocationUpdates(mApiClient, this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mApiClient.disconnect();
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(LOCATION_REQUEST_INTERVAL);
+        mLocationRequest.setFastestInterval(LOCATION_REQUEST_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+    }
+
+    protected void checkSelfPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,24 +182,73 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     @Override
     public void onConnected(Bundle bundle) {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(LOCATION_REQUEST_INTERVAL);
-        mLocationRequest.setFastestInterval(LOCATION_REQUEST_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
 
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mApiClient,
+                        builder.build());
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        result.setResultCallback(this);
+        createLocationRequest();
 
-        }
+        checkSelfPermission();
         LocationServices.FusedLocationApi.requestLocationUpdates(mApiClient, mLocationRequest, this);
+    }
+
+    //the call back of location setting result
+    @Override
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                Log.i(TAG, "All location settings are satisfied.");
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to " +
+                        "upgrade location settings ");
+
+                try {
+                    // Show the dialog by calling startResolutionForResult(), and check the result
+                    // in onActivityResult().
+                    status.startResolutionForResult(MapActivity.this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    Log.i(TAG, "PendingIntent unable to execute request.");
+                }
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                        "not created.");
+                break;
+        }
+    }
+
+    // the call back of status.startResolutionForResult
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                // the case for location change
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        // All required changes were successfully made
+                        Log.i(TAG, "User agreed to make required location settings changes.");
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        // The user was asked to change settings, but chose not to
+                        Log.i(TAG, "User chose not to make required location settings changes.");
+                        break;
+                    default:
+                        break;
+                }
+                break;
+        }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.i(TAG, "Connection suspended");
+        mApiClient.connect();
     }
 
     @Override
@@ -184,7 +275,7 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
     }
 
     /**

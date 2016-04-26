@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
-    
+
     private List<HangoutEvent> events;
     private final ParseUser user;
 
