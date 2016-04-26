@@ -15,7 +15,9 @@ import com.parse.eventful_android.data.SearchResult;
 import com.parse.eventful_android.data.request.EventSearchRequest;
 import com.parse.eventful_android.operations.EventOperations;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +41,20 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
         EventSearchRequest esr = new EventSearchRequest();
         esr.setPageSize(100);
         esr.setLocation("Worcester, MA");
+        esr.setSortOrder(EventSearchRequest.SortOrder.DATE);
+
+        // get current date/time
+        Date fromDate = new Date();
+
+        // get the date 24 hours from now
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.HOUR_OF_DAY, 24);
+        Date toDate = cal.getTime();
+
+        // get the date range and set it in the search request
+        String dateRange = getRangeFromDates(fromDate, toDate);
+        esr.setDateRange(dateRange);
 
         SearchResult sr = null;
         try {
@@ -117,4 +133,12 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
         }
         return hangoutEvents;
     }
+
+    // helper method to get date range in the form the api wants
+    private static String getRangeFromDates(final Date from, final Date to)  {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHH");
+        final String calculatedRange = simpleDateFormat.format(from) + "-" +simpleDateFormat.format(to);
+        return calculatedRange;
+    }
+
 }
