@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -57,6 +58,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -270,9 +272,13 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         double dLongitude = mCurrentLocation.getLongitude();
         marker = map.addMarker(new MarkerOptions().position(new LatLng(dLatitude, dLongitude))
                 .title("My Location").icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+        // show the info window for your location and center camera around it
+        marker.showInfoWindow();
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 16.0f));
 
+        // update our map when the user's location changes
         doMapQuery();
     }
 
@@ -332,6 +338,36 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 title.setText(marker.getTitle());
 
                 final TextView membersAttending = (TextView) v.findViewById(R.id.members_attending);
+                Button joinButton = (Button) v.findViewById(R.id.join_button);
+                TextView startTimeEditText = (TextView) v.findViewById(R.id.start_time);
+                TextView stopTimeEditText = (TextView) v.findViewById(R.id.stop_time);
+
+
+                // remove irrelevant ui components on marker for the "my location" marker
+                if (marker.getTitle().equals("My Location")) {
+                    membersAttending.setVisibility(View.GONE);
+                    joinButton.setVisibility(View.GONE);
+                    startTimeEditText.setVisibility(View.GONE);
+                    stopTimeEditText.setVisibility(View.GONE);
+                    return v;
+                }
+
+                // add start and stop times
+                Date startTime = event.getStartTime();
+                Date stopTime = event.getStopTime();
+
+                if (startTime != null) {
+                    startTimeEditText.setText("Start Time: " + startTime.toString());
+                } else if (startTime == null) {
+                    startTimeEditText.setVisibility(View.GONE);
+                }
+
+                if (stopTime != null) {
+                    stopTimeEditText.setText("Stop Time: " + stopTime.toString());
+                } else if (stopTime == null) {
+                    stopTimeEditText.setVisibility(View.GONE);
+                }
+
 
                 int numMembers = 0;
                 boolean isUserAttending = false;
@@ -357,8 +393,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
 
                 membersAttending.setText("Members attending: " + numMembers);
-
-                Button joinButton = (Button) v.findViewById(R.id.join_button);
 
                 if (isUserAttending == true) {
                     joinButton.setText("Joined!");
@@ -430,6 +464,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         );
     }
 
+    /**
+     * Adds map markers for all of the events nearby the current user
+     */
     private void doMapQuery() {
         Location myLoc = mCurrentLocation;
         if (myLoc == null) {
@@ -468,11 +505,8 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
                         Marker marker = map.addMarker(markerOpts);
-//                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLocation().getLatitude(), event
-//                                .getLocation().getLongitude()), 16.0f));
                         mapMarkers.put(event.getObjectId(), marker);
                         markerHangoutEventMap.put(marker, event);
-
 
                     }
                 }
