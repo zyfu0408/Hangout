@@ -29,4 +29,5 @@ dependencies {
     compile 'com.parse:parseui-widget-android:0.0.1'
     compile 'com.android.support:cardview-v7:23.3.0'
     compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile 'com.beardedhen:androidbootstrap:2.2.0'
 }

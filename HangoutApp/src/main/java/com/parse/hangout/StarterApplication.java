@@ -10,6 +10,7 @@ package com.parse.hangout;
 
 import android.app.Application;
 
+import com.beardedhen.androidbootstrap.TypefaceProvider;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -18,6 +19,7 @@ public class StarterApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        TypefaceProvider.registerDefaultIconSets();
         
         // Add your initialization code here
         Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
