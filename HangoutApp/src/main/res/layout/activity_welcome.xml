@@ -42,7 +42,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         app:bootstrapText="@string/slogan"
-        app:bootstrapBrand="primary"
+        app:bootstrapBrand="secondary"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>
