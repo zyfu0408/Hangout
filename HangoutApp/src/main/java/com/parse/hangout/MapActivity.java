@@ -267,9 +267,13 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         double dLongitude = mCurrentLocation.getLongitude();
         marker = map.addMarker(new MarkerOptions().position(new LatLng(dLatitude, dLongitude))
                 .title("My Location").icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+        // show the info window for your location and center camera around it
+        marker.showInfoWindow();
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 16.0f));
 
+        // update our map when the user's location changes
         doMapQuery();
     }
 
@@ -329,6 +333,14 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                 title.setText(marker.getTitle());
 
                 final TextView membersAttending = (TextView) v.findViewById(R.id.members_attending);
+                Button joinButton = (Button) v.findViewById(R.id.join_button);
+
+
+                // remove irrelevant ui components on marker for the "my location" marker
+                if (marker.getTitle().equals("My Location")) {
+                    membersAttending.setVisibility(View.GONE);
+                    joinButton.setVisibility(View.GONE);
+                }
 
                 int numMembers = 0;
                 boolean isUserAttending = false;
@@ -354,8 +366,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
 
 
                 membersAttending.setText("Members attending: " + numMembers);
-
-                Button joinButton = (Button) v.findViewById(R.id.join_button);
 
                 if (isUserAttending == true) {
                     joinButton.setText("Joined!");
@@ -425,6 +435,9 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
         );
     }
 
+    /**
+     * Adds map markers for all of the events nearby the current user
+     */
     private void doMapQuery() {
         Location myLoc = mCurrentLocation;
         if (myLoc == null) {
