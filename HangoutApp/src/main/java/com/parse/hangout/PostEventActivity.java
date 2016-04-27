@@ -2,23 +2,33 @@ package com.parse.hangout;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.AwesomeTextView;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -40,6 +50,9 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class PostEventActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<LocationSettingsResult> {
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -54,6 +67,34 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
     private Button post_button;
     private String address;
     private ParseGeoPoint event_location;
+    private BootstrapButton event_start_date;
+    private BootstrapButton event_start_time;
+    private BootstrapButton event_end_date;
+    private BootstrapButton event_end_time;
+    private static AwesomeTextView start_time_text;
+    private static AwesomeTextView end_time_text;
+
+    private static int event_start_year;
+    private static int event_start_month;
+    private static int event_start_day;
+    private static int event_start_hour;
+    private static int event_start_minute;
+
+    private static int event_end_year;
+    private static int event_end_month;
+    private static int event_end_day;
+    private static int event_end_hour;
+    private static int event_end_minute;
+
+    private static AwesomeTextView show_event_start_date;
+    private static AwesomeTextView show_event_start_time;
+    private static AwesomeTextView show_event_end_date;
+    private static AwesomeTextView show_event_end_time;
+
+    private static boolean event_start_date_isSet = false;
+    private static boolean event_start_time_isSet = false;
+    private static boolean event_end_date_isSet = false;
+    private static boolean event_end_time_isSet = false;
 
     private HangoutEvent hangoutEvent;
     private ParseGeoPoint parseGeoPoint;
@@ -75,6 +116,47 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
         post_content = (EditText) findViewById(R.id.post_content);
         post_button = (Button) findViewById(R.id.post_button);
 
+        event_start_date = (BootstrapButton) findViewById(R.id.event_start_date);
+        event_start_time = (BootstrapButton) findViewById(R.id.event_start_time);
+        event_end_date = (BootstrapButton) findViewById(R.id.event_end_date);
+        event_end_time = (BootstrapButton) findViewById(R.id.event_end_time);
+
+        show_event_start_date = (AwesomeTextView) findViewById(R.id.show_event_start_date);
+        show_event_start_time = (AwesomeTextView) findViewById(R.id.show_event_start_time);
+        show_event_end_date = (AwesomeTextView) findViewById(R.id.show_event_end_date);
+        show_event_end_time = (AwesomeTextView) findViewById(R.id.show_event_end_time);
+
+        start_time_text = (AwesomeTextView) findViewById(R.id.start_time_text);
+        end_time_text = (AwesomeTextView) findViewById(R.id.end_time_text);
+
+        event_start_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showStartDatePickerDialog(v);
+            }
+        });
+
+        event_start_time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showStartTimePickerDialog(v);
+            }
+        });
+
+        event_end_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEndDatePickerDialog(v);
+            }
+        });
+
+        event_end_time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEndTimePickerDialog(v);
+            }
+        });
+
         hangoutEvent = new HangoutEvent();
 
         post_content.addTextChangedListener(new TextWatcher() {
@@ -91,6 +173,7 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
                 //updatePostButtonState();
             }
         });
+
 
         post_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +212,20 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
     }
 
     private void post() {
+        if (!checkTitleAddressExist()) {
+            Toast.makeText(this, "At least you should type in event title and choose event location",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!checkTimeValid()) {
+            Toast.makeText(this, "The event start time should be earlier than the end time",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
         final ParseUser user = ParseUser.getCurrentUser();
+
         hangoutEvent.setUser(user);
 
         parseGeoPoint = new ParseGeoPoint(event_location.getLatitude(), event_location.getLongitude());
@@ -140,6 +236,16 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
         hangoutEvent.setDescription(getPostContent());
 
         hangoutEvent.setAddress(address);
+
+        //data in the database is not correct, and should detect start time is smaller than stop time
+        if (event_start_date_isSet && event_start_time_isSet) {
+            Date start_time = new Date(event_start_year, event_start_month, event_start_day, event_start_hour, event_start_minute);
+            hangoutEvent.setStartTime(start_time);
+        }
+        if (event_end_date_isSet && event_end_time_isSet) {
+            Date end_time = new Date(event_end_year, event_end_month, event_end_day, event_end_hour, event_end_minute);
+            hangoutEvent.setStopTime(end_time);
+        }
 
         ParseACL acl = new ParseACL();
         acl.setPublicReadAccess(true);
@@ -208,7 +314,9 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
     @Override
     protected void onPause() {
         super.onPause();
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
     }
 
     @Override
@@ -336,11 +444,179 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
         return post_content.getText().toString().trim();
     }
 
-    private void updatePostButtonState() {
-        boolean titleState = getPostTitle() != null && getPostTitle().length() != 0;
+    private boolean checkTitleAddressExist() {
+
+        boolean titleState = getPostTitle().length() != 0;
         boolean addressState = (address != null && event_location != null);
 
-        post_button.setEnabled(titleState && addressState);
+        return  (titleState && addressState) ;
+    }
+    
+    private boolean checkTimeValid() {
+        Date start_time = null;
+        Date end_time = null;
+
+        if (event_start_date_isSet && event_start_time_isSet && event_end_date_isSet && event_end_time_isSet) {
+            start_time = new Date(event_start_year, event_start_month, event_start_day, event_start_hour, event_start_minute);
+            end_time = new Date(event_end_year, event_end_month, event_end_day, event_end_hour, event_end_minute);
+        }
+
+        int i = start_time.compareTo(end_time);
+        return i == -1;
+    }
+
+    public static class StartDatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            event_start_date_isSet = false;
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            event_start_year =  year - 1900;
+            event_start_month = month;
+            event_start_day = day;
+            event_start_date_isSet = true;
+
+            String date = String.format("%d/%d/%d", month, day, year);
+            show_event_start_date.setText(date);
+
+            if (event_start_date_isSet && event_start_time_isSet) {
+                String time = String.format("%d/%d/%d %d:%d:00", event_start_month, event_start_day, event_start_year, event_start_hour, event_start_minute);
+                start_time_text.setText("Your event start time: \n" + time);
+            }
+        }
+    }
+
+    public static class EndDatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            event_end_date_isSet = false;
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            event_end_year = year - 1900;
+            event_end_month = month;
+            event_end_day = day;
+            event_end_date_isSet = true;
+
+            String date = String.format("%d/%d/%d", month, day, year);
+            show_event_end_date.setText(date);
+
+            if (event_end_date_isSet && event_end_time_isSet) {
+                String time = String.format("%d/%d/%d  %d:%d:00", event_end_month, event_end_day, event_end_year, event_end_hour, event_end_minute);
+                end_time_text.setText("Your event end time: \n" + time);
+            }
+
+        }
+    }
+
+    public static class StartTimePickerFragment extends DialogFragment
+            implements TimePickerDialog.OnTimeSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+            event_start_time_isSet = false;
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            // Do something with the time chosen by the user
+            event_start_hour = hourOfDay;
+            event_start_minute = minute;
+            event_start_time_isSet = true;
+
+            String time = String.format("%d:%d:00", hourOfDay, minute);
+            show_event_start_time.setText(time);
+
+            if (event_start_date_isSet && event_start_time_isSet) {
+                String event_time = String.format("%d/%d/%d  %d:%d:00", event_start_month, event_start_day, event_start_year, event_start_hour, event_start_minute);
+                start_time_text.setText("Your event start time: \n" + event_time);
+            }
+
+        }
+
+    }
+
+    public static class EndTimePickerFragment extends DialogFragment
+            implements TimePickerDialog.OnTimeSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+            event_end_time_isSet = false;
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            // Do something with the time chosen by the user
+            event_end_hour = hourOfDay;
+            event_end_minute = minute;
+            event_end_time_isSet = true;
+
+            String time = String.format("%d:%d:00", hourOfDay, minute);
+            show_event_end_time.setText(time);
+
+            if (event_end_date_isSet && event_end_time_isSet) {
+                String event_time = String.format("%d/%d/%d  %d:%d:00", event_end_month, event_end_day, event_end_year, event_end_hour, event_end_minute);
+                end_time_text.setText("Your event end time: \n" + event_time);
+            }
+        }
+
+    }
+
+    public void showStartTimePickerDialog(View v) {
+        DialogFragment newFragment = new StartTimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+
+    public void showStartDatePickerDialog(View v) {
+        DialogFragment newFragment = new StartDatePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    public void showEndTimePickerDialog(View v) {
+        DialogFragment newFragment = new EndTimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+
+    public void showEndDatePickerDialog(View v) {
+        DialogFragment newFragment = new EndDatePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
 }

@@ -40,7 +40,7 @@
     <string name="post">Post</string>
     <string name="character_count_placeholder">0/140</string>
     <string name="activity_post_title">Create a Post</string>
-    <string name="prompt_post">Description...</string>
+    <string name="prompt_post">Post Description...</string>
     <string name="post_subject">Event Subject</string>
     <string name="event_list">Event List</string>
     <string name="post_list">Post List</string>

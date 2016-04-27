@@ -25,7 +25,7 @@ public class StarterApplication extends Application {
         Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
                         .applicationId("hangout_id")
                         .clientKey("hangout_key")
-                        .server("http://130.215.169.159:1337/parse/") // The trailing slash is important.
+                        .server("http://192.168.29.100:1337/parse/") // The trailing slash is important.
                         .build()
         );
 

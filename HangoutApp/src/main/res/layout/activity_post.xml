@@ -1,58 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_main"/>
+        layout="@layout/toolbar_main" />
 
-    <EditText
-        android:id="@+id/post_subject"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="70dp"
-        android:hint="@string/post_subject">
-        <requestFocus/>
-    </EditText>
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/post_content"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/place_autocomplete_fragment"
-        android:layout_below="@+id/post_subject"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="8dp"
-        android:background="@null"
-        android:gravity="top"
-        android:hint="@string/prompt_post"
-        android:inputType="textMultiLine" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <fragment
-        android:id="@+id/place_autocomplete_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_above="@+id/post_button"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"/>
+            <EditText
+                android:id="@+id/post_subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="70dp"
+                android:background="@drawable/border"
+                android:hint="@string/post_subject"
+                android:padding="4dp">
 
-    <Button
-        android:id="@+id/post_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:text="@string/post" />
+                <requestFocus />
+            </EditText>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/border"
+                android:padding="4dp">
+
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/place_autocomplete_fragment"
+                    android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:background="@drawable/border"
+                android:layout_marginTop="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp">
+
+                    <com.beardedhen.androidbootstrap.BootstrapButton
+                        android:id="@+id/event_start_date"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:text="Event Start Date"
+                        app:bootstrapBrand="success"
+                        app:roundedCorners="true" />
+
+                    <com.beardedhen.androidbootstrap.AwesomeTextView
+                        android:id="@+id/show_event_start_date"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        app:bootstrapText="event start date" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp">
+
+                    <com.beardedhen.androidbootstrap.BootstrapButton
+                        android:id="@+id/event_start_time"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:text="Event Start Time"
+                        app:bootstrapBrand="success"
+                        app:roundedCorners="true" />
+
+                    <com.beardedhen.androidbootstrap.AwesomeTextView
+                        android:id="@+id/show_event_start_time"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        app:bootstrapText="event start time" />
+                </LinearLayout>
+
+                <com.beardedhen.androidbootstrap.AwesomeTextView
+                    android:id="@+id/start_time_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bootstrapText="your event start time:"
+                    android:layout_margin="3dp"
+                    android:layout_gravity="center_horizontal" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:background="@drawable/border"
+                android:layout_marginTop="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.beardedhen.androidbootstrap.BootstrapButton
+                        android:id="@+id/event_end_date"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:text="Event End Date"
+                        app:bootstrapBrand="success"
+                        app:roundedCorners="true"
+                        android:layout_margin="3dp" />
+
+                    <com.beardedhen.androidbootstrap.AwesomeTextView
+                        android:id="@+id/show_event_end_date"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        app:bootstrapText="event end date"
+                        android:layout_margin="3dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.beardedhen.androidbootstrap.BootstrapButton
+                        android:id="@+id/event_end_time"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:text="Event End Time"
+                        app:bootstrapBrand="success"
+                        app:roundedCorners="true"
+                        android:layout_margin="3dp" />
+
+                    <com.beardedhen.androidbootstrap.AwesomeTextView
+                        android:id="@+id/show_event_end_time"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        app:bootstrapText="event end time"
+                        android:layout_margin="3dp"/>
+                </LinearLayout>
+
+                <com.beardedhen.androidbootstrap.AwesomeTextView
+                    android:id="@+id/end_time_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bootstrapText="your event end time:"
+                    android:layout_margin="3dp"
+                    android:layout_gravity="center_horizontal"/>
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/post_content"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/border"
+                android:gravity="top"
+                android:hint="@string/prompt_post"
+                android:inputType="textMultiLine"
+                android:padding="4dp" />
+
+            <Button
+                android:id="@+id/post_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/post" />
+        </LinearLayout>
+
+    </ScrollView>
+
 </RelativeLayout>
