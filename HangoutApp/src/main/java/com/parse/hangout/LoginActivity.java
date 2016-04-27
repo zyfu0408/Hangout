@@ -14,14 +14,7 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.eventful_android.data.Event;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-/**
- * Created by fuzhongyuan on 4/12/16.
- */
 public class LoginActivity extends AppCompatActivity {
     private EditText username;
     private EditText password;

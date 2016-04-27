@@ -4,12 +4,14 @@
     style="@style/LoginFormContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_signup_signin"
     android:orientation="vertical"
     tools:context=".LoginActivity">
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_main"></include>
+        layout="@layout/toolbar_main" />
+
 
     <EditText
         android:id="@+id/username"
@@ -18,7 +20,11 @@
         android:hint="@string/prompt_username"
         android:inputType="textEmailAddress"
         android:maxLines="1"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:textColor="#ffffff"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="50dp"/>
 
     <EditText
         android:id="@+id/password"
@@ -30,15 +36,18 @@
         android:imeOptions="actionUnspecified"
         android:inputType="textPassword"
         android:maxLines="1"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:textColor="#ffffff"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
     <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="16dp"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:text="@string/login" />
+
 </LinearLayout>
