@@ -488,11 +488,11 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
             event_start_day = day;
             event_start_date_isSet = true;
 
-            String date = String.format("%d/%d/%d", month, day, year);
+            String date = String.format("%d/%d/%d", month + 1, day, year);
             show_event_start_date.setText(date);
 
             if (event_start_date_isSet && event_start_time_isSet) {
-                String time = String.format("%d/%d/%d %d:%d:00", event_start_month, event_start_day, event_start_year, event_start_hour, event_start_minute);
+                String time = String.format("%d/%d/%d %d:%d:00", event_start_month + 1, event_start_day, event_start_year + 1900, event_start_hour, event_start_minute);
                 start_time_text.setText("Your event start time: \n" + time);
             }
         }
@@ -521,11 +521,11 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
             event_end_day = day;
             event_end_date_isSet = true;
 
-            String date = String.format("%d/%d/%d", month, day, year);
+            String date = String.format("%d/%d/%d", month + 1, day, year);
             show_event_end_date.setText(date);
 
             if (event_end_date_isSet && event_end_time_isSet) {
-                String time = String.format("%d/%d/%d  %d:%d:00", event_end_month, event_end_day, event_end_year, event_end_hour, event_end_minute);
+                String time = String.format("%d/%d/%d  %d:%d:00", event_end_month + 1, event_end_day, event_end_year + 1900, event_end_hour, event_end_minute);
                 end_time_text.setText("Your event end time: \n" + time);
             }
 
@@ -558,7 +558,7 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
             show_event_start_time.setText(time);
 
             if (event_start_date_isSet && event_start_time_isSet) {
-                String event_time = String.format("%d/%d/%d  %d:%d:00", event_start_month, event_start_day, event_start_year, event_start_hour, event_start_minute);
+                String event_time = String.format("%d/%d/%d  %d:%d:00", event_start_month + 1, event_start_day, event_start_year + 1900, event_start_hour, event_start_minute);
                 start_time_text.setText("Your event start time: \n" + event_time);
             }
 
@@ -592,7 +592,7 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
             show_event_end_time.setText(time);
 
             if (event_end_date_isSet && event_end_time_isSet) {
-                String event_time = String.format("%d/%d/%d  %d:%d:00", event_end_month, event_end_day, event_end_year, event_end_hour, event_end_minute);
+                String event_time = String.format("%d/%d/%d  %d:%d:00", event_end_month + 1, event_end_day, event_end_year + 1900, event_end_hour, event_end_minute);
                 end_time_text.setText("Your event end time: \n" + event_time);
             }
         }
