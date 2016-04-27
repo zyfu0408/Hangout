@@ -28,13 +28,13 @@
             android:name="com.parse.CLIENT_KEY"
             android:value="@string/parse_client_key" />
 
-        <!--<meta-data-->
-        <!--android:name="com.google.android.geo.API_KEY"-->
-        <!--android:value="AIzaSyB-CuKyphqvW06v180JR6FUBPQN1awPgDo" />-->
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC5yXOPlZDQ3gua4rT934E00IvOkNlWgss" />
+            android:value="AIzaSyB-CuKyphqvW06v180JR6FUBPQN1awPgDo" />
+
+        <!--<meta-data-->
+        <!--android:name="com.google.android.geo.API_KEY"-->
+        <!--android:value="AIzaSyC5yXOPlZDQ3gua4rT934E00IvOkNlWgss" />-->
 
         <activity
             android:name=".WelcomeActivity"
@@ -60,7 +60,7 @@
 
         <activity
             android:name=".PostEventActivity"
-            android:label="@string/post_list" />
+            android:label="@string/post_event" />
 
         <activity
             android:name=".EventListActivity"

@@ -14,7 +14,7 @@
 
     <string name="powered_by">Powered by</string>
     <string name="parse">Parse</string>
-    <string name="slogan">Welcome to Hangout</string>
+    <string name="slogan">Welcome to Let\'s Hangout</string>
 
     <!-- Strings related to login -->
     <string name="title_activity_login">Log in</string>
@@ -43,8 +43,8 @@
     <string name="prompt_post">Post Description...</string>
     <string name="post_subject">Event Subject</string>
     <string name="event_list">Event List</string>
-    <string name="post_list">Post List</string>
-    <string name="hangout_map">Hangout Map</string>
+    <string name="post_event">Post an Event</string>
+    <string name="hangout_map">Events Map</string>
 
 
 </resources>
