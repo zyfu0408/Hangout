@@ -32,3 +32,4 @@ You will need to enable two APIs: Google Maps Android API and Google Places API 
 
 ![Gradle signingReport image](/images/gradle.png)
 
+With your debug key created, copy the key and replace the value of "com.google.android.geo.API_KEY" in the AndroidManifest.xml. With that, you should be able to run our app locally. Enjoy!
