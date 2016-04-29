@@ -14,8 +14,10 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
+/**
+ * Activity for the event list screen. Loads the EventListAdapter to provide a custom list view with cards
+ */
 public class EventListActivity extends AppCompatActivity {
     private List<HangoutEvent> events;
 
@@ -32,7 +34,6 @@ public class EventListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         // specify an adapter (see also next example)
         ParseQuery<HangoutEvent> query = ParseQuery.getQuery(HangoutEvent.class);
         query.findInBackground(new FindCallback<HangoutEvent>() {
@@ -45,15 +46,9 @@ public class EventListActivity extends AppCompatActivity {
             }
         });
 
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        //mRecyclerView.setHasFixedSize(true);
-
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
 
     }
 

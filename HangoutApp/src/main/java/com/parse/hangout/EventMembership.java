@@ -4,6 +4,9 @@ import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+/**
+ * Custom Parse object for event membership. Takes a pointer to a user and a pointer to an event
+ */
 @ParseClassName("EventMembership")
 public class EventMembership extends ParseObject{
 

@@ -21,12 +21,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Performs the bulk of the Eventful API Queries
+ */
 public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
 
     private static final String API_KEY = "4PkxLvVPCTrPpxHX";
     private static final String APP_USERNAME = "test";
     private static final String APP_PASSWORD = "eventsearch";
 
+    /**
+     * Searches the Eventful API for the top events in Worcester
+     */
     public static List<HangoutEvent> fetch(String query, String location, int limit) {
 
         System.out.println("Setting configuration");
@@ -75,6 +81,10 @@ public class EventfulService extends AsyncTask<Void, Void, List<HangoutEvent>> {
         return fetch(null, null, 1);
     }
 
+    /**
+     * Utility method that converts a List of Eventful Events to Hangout Events
+     * We add the event to our database if it does not already exist in it
+     */
     private static List<HangoutEvent> convertEventListToHangoutEventList(List<Event> events) {
 
         List<HangoutEvent> hangoutEvents = new ArrayList<HangoutEvent>();

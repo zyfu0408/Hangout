@@ -14,21 +14,25 @@ import com.beardedhen.androidbootstrap.TypefaceProvider;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+/**
+ * Application class that connects to the parse server
+ */
 public class StarterApplication extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
         TypefaceProvider.registerDefaultIconSets();
-        
-        // Add your initialization code here
+
+        // initializes the server with the provided URL
         Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
                         .applicationId("hangout_id")
                         .clientKey("hangout_key")
-                        .server("http://192.168.29.100:1337/parse/") // The trailing slash is important.
+                        .server("http://130.215.222.61:1337/parse/") // The trailing slash is important.
                         .build()
         );
 
+        // registers our two hangout objects
         ParseObject.registerSubclass(HangoutEvent.class);
         ParseObject.registerSubclass(EventMembership.class);
     }

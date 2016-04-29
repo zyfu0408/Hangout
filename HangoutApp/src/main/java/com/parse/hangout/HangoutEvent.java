@@ -8,7 +8,9 @@ import com.parse.ParseUser;
 
 import java.util.Date;
 
-
+/**
+ * Custom Parse object for events
+ */
 @ParseClassName("Events")
 public class HangoutEvent extends ParseObject {
 

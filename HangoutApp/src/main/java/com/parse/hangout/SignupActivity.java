@@ -16,7 +16,7 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 /**
- * Created by fuzhongyuan on 4/12/16.
+ * Activity that handles user registration
  */
 public class SignupActivity extends AppCompatActivity {
     private EditText username;
@@ -46,6 +46,9 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Registers a user on the parse server. Uses the standard ParseUser object
+     */
     private void signup() {
         String username_text = username.getText().toString().trim();
         String password_text = password.getText().toString().trim();

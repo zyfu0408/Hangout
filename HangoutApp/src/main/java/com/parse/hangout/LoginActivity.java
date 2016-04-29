@@ -15,6 +15,9 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
+/**
+ * Activity for user login
+ */
 public class LoginActivity extends AppCompatActivity {
     private EditText username;
     private EditText password;
@@ -40,6 +43,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Method called on click of the login button
+     */
     private void login() {
         String username_text = username.getText().toString().trim();
         String password_text = password.getText().toString().trim();

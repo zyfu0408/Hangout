@@ -53,6 +53,9 @@ import com.parse.SaveCallback;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Activity for posting new events
+ */
 public class PostEventActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<LocationSettingsResult> {
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -211,6 +214,9 @@ public class PostEventActivity extends AppCompatActivity implements GoogleApiCli
         autocompleteFragment.setFilter(typeFilter);
     }
 
+    /**
+     * Creates a new event, called on post button click
+     */
     private void post() {
         if (!checkTitleAddressExist()) {
             Toast.makeText(this, "At least you should type in event title and choose event location",

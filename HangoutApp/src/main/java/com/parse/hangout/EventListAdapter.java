@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Adapter class that binds our HangoutEvents to the list view
+ */
 public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
 
     private List<HangoutEvent> events;

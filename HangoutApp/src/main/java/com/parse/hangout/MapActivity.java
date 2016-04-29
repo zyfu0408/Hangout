@@ -66,7 +66,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-
+/**
+ * Activity for the map screen
+ */
 public class MapActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback, ResultCallback<LocationSettingsResult> {
 
     private GoogleApiClient mApiClient;
@@ -548,26 +550,6 @@ public class MapActivity extends AppCompatActivity implements GoogleApiClient.Co
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Hangout Notification")
                         .setContentText("A new member have added your event!");
-        // Creates an explicit intent for an Activity in your app
-        //Intent resultIntent = new Intent(this, ResultActivity.class);
-
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        //TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-        // Adds the back stack for the Intent (but not the Intent itself)
-        //stackBuilder.addParentStack(ResultActivity.class);
-
-        // Adds the Intent that starts the Activity to the top of the stack
-//        stackBuilder.addNextIntent(resultIntent);
-//        PendingIntent resultPendingIntent =
-//                stackBuilder.getPendingIntent(
-//                        0,
-//                        PendingIntent.FLAG_UPDATE_CURRENT
-//                );
-//        mBuilder.setContentIntent(resultPendingIntent);
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 /**
- * Created by fuzhongyuan on 4/5/16.
+ * Activity that loads the Welcome to Let's Hangout screen
  */
 public class WelcomeActivity extends Activity {
 
