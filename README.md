@@ -27,3 +27,8 @@ In order to run the Android app with the server, you must the IP address in Star
 You can obtain your ip address by running "ifconfig" on Mac/Linux, or "ipconfig" on windows
 Once the address is changed and the server is started, you can start the application.
 
+Additionally, you will need to register the app in order to get an API key: console.developers.google.com
+You will need to enable two APIs: Google Maps Android API and Google Places API for Android. Once the APIs are enabled, you can generate a key with the package name "com.parse.hangout". You will need to run the grade signing report, as seen below:
+
+![Gradle signingReport image](/images/gradle.png)
+
