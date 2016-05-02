@@ -21,7 +21,7 @@ You should be able to see the dashboard at: http://localhost:4040/. Here, you ca
 such as user accounts, events, and event memberships.
 
 ## Running the app
-In order to run the Android app with the server, you must the IP address in StarterApplication.java in the
+In order to run the Android app with the server, you must change the IP address in StarterApplication.java in the
 "com.parse.hangout" package. You can obtain your ip address by running "ifconfig" on Mac/Linux, or "ipconfig" on Windows.
 
 Additionally, you will need to register the app in order to get an API key: console.developers.google.com
