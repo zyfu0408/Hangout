@@ -1,7 +1,9 @@
 # Let's Hangout
 ##### Adam Chaulk (acchaulk) and Zhongyuan Fu (zyfu0408)
 This app is our final project for CS 528 at Worcester Polytechnic Institute. Let's Hangout is an
-android application that allows user to organize events with others in their area
+android application that allows user to organize events with others in their area.
+
+[Paper](http://www.google.com)
 
 ## Running Parse Server
 First, you must obtain npm from: https://www.npmjs.com. Once it is installed, open a terminal and run:
