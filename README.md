@@ -6,7 +6,8 @@ android application that allows user to organize events with others in their are
 [View our paper](https://github.com/zyfu0408/Hangout/blob/master/AndroidPaper.pdf)
 
 ## Demo
-![Let's Hangout](https://github.com/zyfu0408/Hangout/blob/master/demo_screenshot.png)
+[![Let's Hangout](https://github.com/zyfu0408/Hangout/blob/master/demo_screenshot.png)]
+(https://www.youtube.com/watch?v=xsTGa3RLpYI)
 
 ## Running Parse Server
 First, you must obtain npm from: https://www.npmjs.com. Once it is installed, open a terminal and run:
